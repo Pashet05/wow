@@ -1,0 +1,52 @@
+{% extends 'flatpages/default.html' %}
+
+{% load custom_filters %}
+{% load custom_tags %}
+
+{% block title %}
+Поиск постов
+{% endblock title %}
+
+{% block content %}
+    <h1>Поиск постов</h1>
+        {% if Is_not_author %}
+            <button><a href="{% url 'author_now' %}">Стать автором</a></button>
+        {% endif %}
+    <form action="" method="get">
+        {# Переменная, которую мы передали через контекст, может сгенерировать нам форму с полями #}
+        {{ filterset.form.as_p }}
+        {# Добавим кнопку отправки данных формы #}
+        <input type="submit" value="Найти" />
+    </form>
+    <hr>
+    {% if news %}
+<table>
+    <tr>
+        <tr>Название поста</tr>
+        <tr>Дата поста</tr>
+        <tr>Текст</tr>
+    </tr>
+    {% for i in news %}
+    <tr>
+        <td>{{ i.name_post|censor }}</td>
+        <td>{{ i.date_post|date:'d M Y' }}</td>
+        <td>{{ i.text_post|truncatewords:20|censor }}</td>
+    </tr>
+    {% endfor %}
+</table>
+    {% else %}
+        <h2>Новостей нет!</h2>
+    {% endif %}    
+
+    {{ page_obj.number }}
+
+   {# Информация о следующих страницах #}
+   {% if page_obj.has_next %}
+       <a href="?page={{ page_obj.next_page_number }}">{{ page_obj.next_page_number }}</a>
+       {% if paginator.num_pages != page_obj.next_page_number %}
+           ...
+           <a href="?page={{ page_obj.paginator.num_pages }}">{{ page_obj.paginator.num_pages }}</a>
+       {% endif %}
+   {% endif %}
+
+{% endblock content %}
